@@ -29,7 +29,7 @@ var dataDir = flag.String(
 
 var atAddress = flag.String(
 	"listenAddr",
-	"0.0.0.0:8999",
+	"0.0.0.0:26180",
 	"host:port to serve service broker API",
 )
 
@@ -89,12 +89,6 @@ func checkParams() {
 		flag.Usage()
 		os.Exit(1)
 	}
-
-	if *awsSubnetIds == "" {
-		fmt.Fprint(os.Stderr, "\nERROR: Required parameter awsSubnetIds not defined.\n\n")
-		flag.Usage()
-		os.Exit(1)
-	}
 }
 
 func parseSubnets(subnetsFlag string) []string {
@@ -102,13 +96,6 @@ func parseSubnets(subnetsFlag string) []string {
 }
 
 func createServer(logger lager.Logger) ifrit.Runner {
-	session, err := session.NewSession()
-	if err != nil {
-		panic(err)
-	}
-
-	config := aws.NewConfig()
-
 	serviceBroker := knfsbroker.New(logger,
 		*serviceName, *serviceId,
 		*dataDir, &osshim.OsShim{}, &ioutilshim.IoutilShim{}, clock.NewClock(),
